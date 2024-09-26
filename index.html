@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarklet Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center; /* Căn giữa nội dung */
+        }
+        .back {
+            font-weight: bold;
+            font-size:13px;
+            text-decoration: none;
+            color:#0090FF;
+            border-radius: 25px;
+            background: #E9F6FD;
+            padding: 12px;
+        }
+        .back:hover { 
+            background-color: #E9F3F9;
+
+            border: #0060CD;
+            border-width: thin;
+            border: 1px solid #A4CFF2;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px; /* Bo góc */
+            border: 2px solid #4CAF50; /* Màu viền */
+            font-size: 16px; /* Kích thước chữ */
+        }
+        input:focus, button:focus {
+            outline: none; /* Ẩn đường viền mặc định khi có focus */
+            border-color: #45a049; /* Màu viền khi focus */
+        }
+        button {
+            background-color: #4CAF50; /* Màu nền nút */
+            color: white; /* Màu chữ nút */
+            cursor: pointer; /* Thay đổi con trỏ khi di chuột vào nút */
+            transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+        }
+        button:hover {
+            background-color: #45a049; /* Màu nền khi hover */
+        }
+        button:active {
+            background-color: #3e8e41; /* Màu nền khi nhấn giữ */
+            transform: translateY(2px); /* Đẩy nút xuống khi nhấn giữ */
+        }
+        h2 {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bookmarklet Generator</h1>
+    
+    <div>
+        <label for="id">ID:</label><br>
+        <input type="text" id="id" placeholder="Enter ID (e.g., SM1361)" required><br>
+    </div>
+    <br>
+    <br>
+    <div>
+        <label for="values">Values (comma-separated):</label><br>
+        <input type="text" id="values" placeholder="Enter values (e.g., C84,C104,C130,C145,C155)" required><br>
+    </div>
+    
+    <button id="generate">Generate Bookmarklet</button>
+    
+    <h2>Your Bookmarklet:</h2>
+    <a id="bookmarkletLink" class="back" href="#" style="display: none;" target="_blank">Bookmarklet</a>
+
+    <h2>Hướng Dẫn Tạo Bookmarklet</h2>
+    <ol>
+        <li><strong>Mở Bookmarklet Generator:</strong> Tải trang Bookmarklet Generator trong trình duyệt.</li>
+        <li><strong>Nhập Thông Tin Cần Thiết:</strong>
+            <ul>
+                <li><strong>ID:</strong> Nhập ID bạn muốn sử dụng (ví dụ: SM1361).</li>
+                <li><strong>Giá Trị:</strong> Nhập các giá trị cần thiết, ngăn cách bằng dấu phẩy (ví dụ: C84,C104,C130,C145,C155).</li>
+            </ul>
+        </li>
+        <li><strong>Tạo Bookmarklet:</strong> Nhấn vào nút "Generate Bookmarklet". Một liên kết bookmarklet sẽ xuất hiện bên dưới.</li>
+        <li><strong>Lưu Bookmarklet vào Thanh Bookmark:</strong>
+            <ul>
+                <li>Hiện thanh bookmark: Nếu thanh bookmark của bạn đang ẩn, nhấn Ctrl+Shift+B để hiển thị nó.</li>
+                <li>Lưu bookmarklet: Nhấn và giữ chuột vào liên kết "Click to use Bookmarklet". Kéo chuột vào thanh bookmark của trình duyệt và thả nó vào đó.</li>
+            </ul>
+        </li>
+        <li><strong>Sử Dụng Bookmarklet:</strong>
+            <ul>
+                <li>Truy cập vào Google Form như mẫu bạn Thiee gửi.</li>
+                <li>Bấm vào bookmark bạn đã tạo ở bước 4 để sử dụng bookmarklet.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>Xong! 🎉</h2>
+    <p>Bây giờ bạn có thể sử dụng bookmarklet của mình để tự động gửi dữ liệu vào Google Forms!</p>
+    
+    <h2>Lưu Ý:</h2>
+    <ul>
+        <li>Bookmarklet này chỉ hoạt động trên các trang Google Forms. Nếu bạn sử dụng trên trang khác, nó sẽ thông báo lỗi.</li>
+        <li>Đảm bảo rằng các trường cần thiết trên Google Forms có ID chính xác.</li>
+    </ul>
+
+    <script>
+        document.getElementById('generate').addEventListener('click', function() {
+            var id = document.getElementById('id').value;
+            var values = document.getElementById('values').value.split(',').map(v => v.trim());
+
+            // Construct the bookmarklet
+            var bookmarklet = `javascript:(function(){var currentUrl=window.location.href;if(!currentUrl.includes("docs.google.com/forms")){console.error('This bookmarklet can only be used on Google Forms.');return;}var formId=currentUrl.split('/d/e/')[1].split('/')[0];var formUrl='https://docs.google.com/forms/d/e/'+formId+'/formResponse';function extractEntryIds(){var entryIds=[];var inputs=document.querySelectorAll('input[type="hidden"]');inputs.forEach(input=>{var name=input.getAttribute('name');if(name){entryIds.push(name);}});return entryIds;}var entryIds=extractEntryIds();console.log(entryIds);var id="${id}";var values=${JSON.stringify(values)};var firstFieldEntry=entryIds[0];var secondFieldEntry=entryIds[1];if(!firstFieldEntry||!secondFieldEntry){console.error('Required entry IDs not found on the form.');return;}values.forEach(function(value){var data=new URLSearchParams();data.append(firstFieldEntry,id);data.append(secondFieldEntry,value);fetch(formUrl,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',},body:data.toString()}).then(response=>{if(!response.ok){throw new Error('Network response was not ok');}return response.text();}).then(responseText=>{console.log('Form submitted successfully:',responseText);}).catch(error=>{console.error('Error submitting form:',error);});});})();`;
+
+            // Set the href of the bookmarklet link
+            var bookmarkletLink = document.getElementById('bookmarkletLink');
+            bookmarkletLink.href = bookmarklet;
+            const d = new Date();
+            bookmarkletLink.textContent = `Auto-${d.getDate()}/${d.getMonth()}`;
+            bookmarkletLink.style.display = "inline"; // Show the link
+        });
+    </script>
+</body>
+</html>
